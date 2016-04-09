@@ -5,29 +5,44 @@ import nltk
 from nltk.parse.stanford import StanfordParser
 # from nltk.parse.stanford import StanfordNeuralDependencyParser
 from nltk.parse.stanford import StanfordDependencyParser
+import nltk.data
+sent_detector = nltk.data.load('tokenizers/punkt/english.pickle')
 
 
-def getSetenceTrigram(dependency_parser,string):
-	# string = string.encode('ascii','ignore')
+def getSentenceTrigram(dependency_parser,sentence):
 	pp = pprint.PrettyPrinter(indent = 4)
-	parse = getDependencyParseList(dependency_parser,string)
-	string = string.split()
-	# print parse[0][0]
-	# print parse[0][2]
+	parse = getDependencyParseList(dependency_parser,sentence)
+	pp.pprint(parse)
+	# print sentence
+	if sentence[-1].lower() < 'a' or sentence[-1].lower() > 'z':
+		sentence = sentence[:-1]
+	# print sentence
+	sentence = sentence.split()
 	i = [-1,-1,-1]
-	i[0] = string.index(parse[0][0][0].encode('ascii','ignore'))
-	i[1] = string.index(parse[0][2][0].encode('ascii','ignore'))
-	w1 = string[i[0]]
-	# print w1
+	i[0] = sentence.index(parse[0][0][0].encode('ascii','ignore'))
+	i[1] = sentence.index(parse[0][2][0].encode('ascii','ignore'))
+	w1 = sentence[i[0]]
 	for j in range(1,len(parse)):
 		triple = parse[j]
 		if (triple[0][0].encode('ascii','ignore') == w1):
-			i[2] = string.index(triple[2][0].encode('ascii','ignore'))
+			i[2] = sentence.index(triple[2][0].encode('ascii','ignore'))
 			break
-	words = [string[j] for j in sorted(i)]
+	words = [sentence[j] for j in sorted(i)]
 	print words
 	return
 
+def splitTextIntoSentences(dependency_parser, text):
+	global sent_detector
+	text = 'All of us went to the show to watch the entire band play live. Mangoes are liked by me.'
+	sentences = sent_detector.tokenize(text)
+	return sentences
+
+def getSentenceTrigramsForText(dependency_parser, text):
+	global sent_detector
+	sentences = sent_detector.tokenize(text)
+	print sentences
+	trigrams = [getSentenceTrigram(dependency_parser,s) for s in sentences]
+	print sentences
 
 def printDependencyParse(dependency_parser,string):
 	pp = pprint.PrettyPrinter(indent = 4)
@@ -35,24 +50,30 @@ def printDependencyParse(dependency_parser,string):
 
 
 def getDependencyParseList(dependency_parser, string):
-	result = (dependency_parser.raw_parse_sents(string)).next()
+	result = (dependency_parser.raw_parse(string)).next()
 	return list(result.triples())
 
 def main():
 
 	dependency_parser = StanfordDependencyParser()
-	getSetenceTrigram(dependency_parser,'I shot an elephant in my sleep')
-	print
-	getSetenceTrigram(dependency_parser,'Mangoes are liked by me')
-	print 
-	getSetenceTrigram(dependency_parser,'All of us went to the show to watch the entire band play live')
-	print 
-	getSetenceTrigram(dependency_parser,'The man in the black suit played good guitar')
-	print 
-	getSetenceTrigram(dependency_parser,'Either of these yields a good performance statistical parsing system')
-	print 
-	getSetenceTrigram(dependency_parser,'The movie was good to some extent but I did not like it')
-	return
+
+	# print splitTextIntoSentences(dependency_parser,'')
+	# return
+	# getSentenceTrigram(dependency_parser,'I shot an elephant in my sleep')
+	# print
+	# getSentenceTrigram(dependency_parser,'Mangoes are liked by me')
+	# print 
+	# getSentenceTrigram(dependency_parser,'All of us went to the show to watch the entire band play live')
+	# print 
+	# getSentenceTrigram(dependency_parser,'The man in the black suit played good guitar')
+	# print 
+	# getSentenceTrigram(dependency_parser,'Either of these yields a good performance statistical parsing system')
+	# print 
+	# getSentenceTrigram(dependency_parser,'The movie was good to some extent but I did not like it')
+	# return
+
+	getSentenceTrigramsForText(dependency_parser,'I shot an elephant in my sleep. All of us went to the show to watch the entire band play live.Mangoes are liked by me. The man in the black suit played good guitar. Either of these yields a good performance statistical parsing system. The movie was good to some extent but I did not like it.')
+
 
 	# dep_parser = StanfordNeuralDependencyParser()
 	# print [parse.tree() for parse in dep_parser.raw_parse("The quick brown fox jumps over the lazy dog.")] 
