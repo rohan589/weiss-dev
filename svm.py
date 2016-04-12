@@ -19,17 +19,18 @@ def main():
 	# return
 
 
-	ngrams = getNGramsFromTrainingData()
+	# ngrams = getNGramsFromTrainingData()
 	# print len(ngrams[0])
 	# print len(ngrams[1])
 	# print len(ngrams[2])
 
-	with open(r"ngrams_v2.pickle", "wb") as output_file:
-		cPickle.dump(ngrams, output_file)
+	# with open(r"ngrams_v2.pickle", "wb") as output_file:
+	# 	cPickle.dump(ngrams, output_file)
 
-	# with open(r"ngrams.pickle", "rb") as input_file:
-	# 	ngrams = cPickle.load(input_file)
+	with open(r"ngrams.pickle", "rb") as input_file:
+		ngrams = cPickle.load(input_file)
 
+	print len(ngrams[0])
 	ngrams[0] = ngrams[0][:10000]
 	# ngrams[0] = ngrams[0][:1000]
 	print len(ngrams[0])
@@ -38,7 +39,7 @@ def main():
 	print ngrams[0][:10]
 	print ngrams[1][:10]
 	print ngrams[2][:10]
-	return
+	# return
 	populateNgramDict(ngrams)
 	featureTable = buildFeatureTable()
 	featureVectors = featureTable[0]
